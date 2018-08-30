@@ -10,5 +10,5 @@ register(
 register(
     id='heikopendulumfmu-v0',
     entry_point='gym_heiko.envs:HeikoPendulumFMUEnv',
-    max_episode_steps=400,
+    max_episode_steps=200,
 )

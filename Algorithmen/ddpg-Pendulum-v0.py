@@ -4,8 +4,8 @@ import gym_heiko
 from gym import wrappers
 import tensorflow as tf
 import json
-import sys
-import os
+# import sys
+# import os
 from os import path
 import random
 from collections import deque
@@ -43,7 +43,7 @@ l2_reg_actor = 1e-6			# L2 regularization factor for the actor
 l2_reg_critic = 1e-6		# L2 regularization factor for the critic
 dropout_actor = 0			# dropout rate for actor (0 = no dropout)
 dropout_critic = 0			# dropout rate for critic (0 = no dropout)
-num_episodes = 1500		# number of episodes
+num_episodes = 1500         # number of episodes
 max_steps_ep = 10000  # default max number of steps per episode (unless env has a lower hardcoded limit)
 tau = 1e-2				# soft target update rate
 train_every = 1			# number of steps to run the policy (and collect experience) before updating network weights
@@ -57,7 +57,6 @@ exploration_sigma = 0.2	# sigma parameter for the exploration noise process: dXt
 
 # game parameters
 env = gym.make(env_to_use)
-print(env)  # HIER
 state_dim = np.prod(np.array(env.observation_space.shape)) 	# Get total number of dimensions in state
 action_dim = np.prod(np.array(env.action_space.shape))		# Assuming continuous action space
 
@@ -70,7 +69,7 @@ outdir = '/tmp/ddpg-agent-results'
 env = wrappers.Monitor(env, outdir, force=True)
 
 
-print(env)  # HIER
+
 
 
 
@@ -243,26 +242,26 @@ for ep in range(num_episodes):
 
     # Initial state
     observation = env.reset()
-    if ep%10 == 0: env.render()
+    if ep % 50 == 0:
+        env.render()
 
     for t in range(max_steps_ep):
         # choose action based on deterministic policy
         action_for_state, = sess.run(actions,
         	feed_dict = {state_ph: observation[None], is_training_ph: False})
 
-        print(action_for_state)  # HIER
+
 
         # add temporally-correlated exploration noise to action (using an Ornstein-Uhlenbeck process)
-        # print(action_for_state)
+
         noise_process = exploration_theta*(exploration_mu - noise_process) + exploration_sigma*np.random.randn(action_dim)
-        # print(noise_scale*noise_process)
+
         action_for_state += noise_scale*noise_process
 
         # take step
         next_observation, reward, done, time = env.step(action_for_state)
-        print(time)
 
-        if ep % 1 == 0:
+        if ep % 50 == 0:
             env.render()
         total_reward += reward
 
@@ -297,7 +296,6 @@ for ep in range(num_episodes):
         if done:
             # Increment episode counter
             _ = sess.run(episode_inc_op)
-            print('done')  # HIER
             break
 
     print('Episode %2i, Reward: %7.3f, Steps: %i, Final noise scale: %7.3f' % (ep, total_reward, steps_in_ep, noise_scale))
